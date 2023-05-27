@@ -39,14 +39,43 @@ for demand_index, demand_location in enumerate(demand_locations):
         print("From", supply_location, "to", demand_location)
         print(d, t)
         distance[demand_index, supply_index] = d
-        travel_time[demand_index, supply_index] = d
+        travel_time[demand_index, supply_index] = t
 
 distance_df = pd.DataFrame(
-    distance, index=demand_locations_code, columns=supply_locations)
+    distance, index=demand_locations, columns=supply_locations)
 travel_time_df = pd.DataFrame(
-    travel_time, index=demand_locations_code, columns=supply_locations)
+    travel_time, index=demand_locations, columns=supply_locations)
 
 distance_df.to_csv(os.path.join(
-    os.path.dirname(__file__), "../data/distance.csv"))
+    os.path.dirname(__file__), "../data/distance-supply2market.csv"))
 travel_time_df.to_csv(os.path.join(
-    os.path.dirname(__file__), "../data/travel_time.csv"))
+    os.path.dirname(__file__), "../data/travel_time-supply2market.csv"))
+
+distance = np.zeros((len(demand_locations), len(demand_locations)))
+travel_time = np.zeros((len(demand_locations), len(demand_locations)))
+for demand1_index, demand1_location in enumerate(demand_locations):
+    for demand2_index,  demand2_location in enumerate(demand_locations):
+        result = map_client.distance_matrix(demand1_location, demand2_location)
+        # print(result)
+        try:
+            d = result["rows"][0]["elements"][0]["distance"]["value"]/1000
+        except KeyError:
+            d = 0
+        try:
+            t = result["rows"][0]["elements"][0]["duration"]["value"]/60
+        except KeyError:
+            t = 0
+        print("From", demand1_location, "to", demand2_location)
+        print(d, t)
+        distance[demand1_index, demand2_index] = d
+        travel_time[demand1_index, demand2_index] = t
+
+distance_df = pd.DataFrame(
+    distance, index=demand_locations, columns=demand_locations)
+travel_time_df = pd.DataFrame(
+    travel_time, index=demand_locations, columns=demand_locations)
+
+distance_df.to_csv(os.path.join(
+    os.path.dirname(__file__), "../data/distance-market2market.csv"))
+travel_time_df.to_csv(os.path.join(
+    os.path.dirname(__file__), "../data/travel_time-market2market.csv"))
