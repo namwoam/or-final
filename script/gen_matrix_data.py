@@ -79,3 +79,7 @@ distance_df.to_csv(os.path.join(
     os.path.dirname(__file__), "../data/distance-market2market.csv"))
 travel_time_df.to_csv(os.path.join(
     os.path.dirname(__file__), "../data/travel_time-market2market.csv"))
+
+geo_data_df = pd.DataFrame(columns=["place", "lat", "lng"])
+for place in supply_locations:
+    print(place)
